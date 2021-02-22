@@ -3,6 +3,7 @@ Google Analytics template tags and filters, using the new analytics.js library.
 """
 
 import re
+from django.conf import settings
 
 from django.template import Library, Node, TemplateSyntaxError
 
@@ -53,11 +54,12 @@ class GoogleAnalyticsGTagNode(Node):
             '''must be a string looking like one of these patterns
             ('UA-XXXXXX-Y' , 'AW-XXXXXXXXXX',
             'G-XXXXXXXX', 'DC-XXXXXXXX')''')
+        self.identity_function = getattr(settings, 'IDENTITY_FUNCTION', None)
 
     def render(self, context):
         other_fields = {}
 
-        identity = get_identity(context)
+        identity = get_identity(context, 'google_analytics_gtag', self.identity_function)
         if identity is not None:
             other_fields['user_id'] = identity
 
